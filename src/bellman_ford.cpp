@@ -1,53 +1,60 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <stack>
 #include <cstring>
 #include <algorithm>
+#include <limits.h>
+
+// GAAT ER VANUIT DAT JE EEN CONNECTED GRAPH HEBT
+// anders toepassingen op elke component
 
 using namespace std;
 
-#define N_MAX 6
+int N_MAX = 7;
 typedef pair<int, int> pii;
 
 struct Edge
 {
-  Edge(int _to, int _w)
+  Edge(int _from, int _to, int _w)
   {
+    from = _from;
     to = _to;
     w = _w;
   }
 
+  bool operator <(const Edge& b) const
+  {
+    return w < b.w;
+  }
+
+  bool operator >(const Edge& b) const
+  {
+    return b.w < w;
+  }
+
+  int from;
   int to;
   int w;
 };
 
-// vector<Vertex> vert;
-vector<vector<Edge> > adj(N_MAX);
+vector<Edge> edges;
 vector<int> distances(N_MAX);
-vector<bool> visited(N_MAX, false);
 
-void dijkstra()
+void bellman_ford()
 {
-  fill(visited.begin(), visited.end(), false);
+  fill(distances.begin(), distances.end(), 10000);
+  distances[0] = 0;
 
-  priority_queue<pii, vector<pii>, greater<pii> > q; // dist, id
-  q.push(make_pair(0, 0));
-  pii v;
+  for(int i = 0; i < N_MAX - 1; ++i)
+    for(int i = 0; i < edges.size(); ++i)
+    {
+      if(distances[edges[i].to] > distances[edges[i].from] + edges[i].w)
+        distances[edges[i].to] = distances[edges[i].from] + edges[i].w;
 
-  while(!q.empty())
-  {
-    v = q.top();
-    q.pop();
-
-    if(visited[v.second])
-      continue;
-
-    visited[v.second] = true;
-    for(int i = 0; i < adj[v.second].size(); ++i)
-      q.push(make_pair(v.first + adj[v.second][i].w, adj[v.second][i].to));
-
-    distances[v.second] = v.first;
-  }
+      if(distances[edges[i].from] > distances[edges[i].to] + edges[i].w)
+        distances[edges[i].from] = distances[edges[i].to] + edges[i].w;
+    }
 
   // OUTPUT
   for(int i = 0; i < N_MAX; ++i)
@@ -56,19 +63,16 @@ void dijkstra()
 
 int main()
 {
-  int num_vertices, num_edges, node, distance;
+  int num_vertices, num_edges, from, to, weight;
   cin >> num_vertices;
-  for(int i = 0; i < num_vertices; ++i)
+  cin >> num_edges;
+  for(int j = 0; j < num_edges; ++j)
   {
-     cin >> num_edges;
-     for(int j = 0; j < num_edges; ++j)
-     {
-       cin >> node >> distance;
-       adj[i].push_back(Edge(node, distance));
-     }
+    cin >> from >> to >> weight;
+    edges.push_back(Edge(from, to, weight));
   }
 
-  dijkstra();
+  bellman_ford();
 
   return 0;
 }

@@ -52,22 +52,25 @@ void kruskal()
   vector<Edge> mst;
   int total_length = 0;
 
-  stack<Edge> s;
+  priority_queue<Edge, vector<Edge>, greater<Edge> > q;
+  for(int i = 0; i < edges.size(); ++i)
+    q.push(edges[i]);
 
   const Edge* e;
-  while(!s.empty())
+  while(!q.empty())
   {
-    e = &s.top();
+    e = &q.top();
 
     if(group[e->from] != group[e->to])
     {
-      int size = groups[group[e->from]].size();
+      int g = group[e->from];
+      int size = groups[g].size();
       for(int i = 0; i < size; ++i)
       {
-        group[groups[group[e->from]][i]] = group[e->to];
-        groups[group[e->to]].push_back(groups[group[e->from]][i]);
+        group[groups[g][i]] = group[e->to];
+        groups[group[e->to]].push_back(groups[g][i]);
       }
-      groups[group[e->from]].empty();
+      groups[g].empty();
 
       mst.push_back(*e);
       total_length += e->w;
@@ -79,7 +82,7 @@ void kruskal()
         break;
     }
 
-    s.pop();
+    q.pop();
   }
 
   // OUTPUT
@@ -98,8 +101,6 @@ int main()
     cin >> from >> to >> weight;
     edges.push_back(Edge(from, to, weight));
   }
-
-  N_MAX = num_vertices;
 
   kruskal();
 
