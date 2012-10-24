@@ -3,19 +3,19 @@ Algorithms
 
 Algorithm reference. Implementations for programming contests.
 
-In:
+**(...) means, not yet here**
 
 Graphs
 ------
-
-(Algorithm) means, not yet here
 
 - Bellman-Ford
 - Dijkstra
 - Kruskal
 - BFS (and DFS)
 - (Min-Cut Max-Flow)
+- (Cycle Detection)
 - (Strongly Connected Components)
+- (Finding Bridges)
 
 Geometry
 --------
