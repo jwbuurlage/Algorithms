@@ -43,6 +43,8 @@ int max_flow(int source, int target)
 
   int flow = 0;
 
+  vector<pii> min_cut;
+
   while(true)
   {
     memset(parent, 0, sizeof(parent));
@@ -99,24 +101,42 @@ int max_flow(int source, int target)
     }
 
     if(!found_path)
+    {
+      for(int i = 0; i < N_MAX; ++i)
+        if(visited[i])
+          for(int j = 0; j < N_MAX; ++j)
+            if(adj[i][j] && !visited[j])
+              min_cut.push_back(make_pair(i, j));
       break;
+    }
   }
+
+  cout << "---MIN-CUT---" << endl;
+  for(int i = 0; i < min_cut.size(); ++i)
+    cout << min_cut[i].first << " " << min_cut[i].second << endl;
+
+  for(int i = 0; i < N_MAX; ++i)
+    flow += f[i][target];
 
   return flow;
 }
 
 int main()
 {
-  int num_vertices, num_edges, from, to, weight;
+  int num_vertices, num_edges, from, to, capacity;
   cin >> num_vertices;
   cin >> num_edges;
   for(int j = 0; j < num_edges; ++j)
   {
-    cin >> from >> to >> weight;
-    edges.push_back(Edge(from, to, weight));
+    cin >> from >> to >> capacity;
+    adj[from][to] = true;
+    adj[to][from] = true;
+    c[from][to] = capacity;
+    c[to][from] = capacity;
   }
 
-  max_flow(0, 6);
+  int flow = max_flow(0, 5);
+  cout << "---MAX-FLOW---" << endl << flow;
 
   return 0;
 }
