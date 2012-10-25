@@ -12,7 +12,7 @@ Graphs
 - Dijkstra
 - Kruskal
 - BFS (and DFS)
-- (Min-Cut Max-Flow)
+- Min-Cut Max-Flow
 - (Cycle Detection)
 - (Strongly Connected Components)
 - (Finding Bridges)
