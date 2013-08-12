@@ -154,15 +154,15 @@ void convexHull(const vector<point>& points, vector<int>& output)
     output.push_back(ordered[1]);
     for(unsigned int i = 2; i < ordered.size(); ++i)
     {
-        //A = second to last element is output[count-1]
-        //B = last element is output[count];
+        //A = second to last element is output[output.size()-2]
+        //B = last element is output.back()
         //C = next element is ordered[i]
         //We need to check wether the line ABC makes a right-turn at B, if so, delete it
         //Use the cross product on (A-B) and (C-B): delete the point if (A-B)^(C-B) > 0
 
         //NOTE: >  INCLUDES points on the hull-line
         //      >= EXCLUDES points on the hull-line
-        while( output.size() > 1 && ((points[output[count-1]] - points[output[count]])^(points[ordered[i]] - points[output[count]])) > 0 )
+        while( output.size() > 1 && ((points[output[output.size()-2]] - points[output.back()])^(points[ordered[i]] - points[output.back()])) > 0 )
             output.pop_back();
 
         output.push_back(ordered[i]);
