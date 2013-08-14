@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <stack>
 #include <climits>
 #include <cstring>
 
@@ -12,7 +11,6 @@ struct Edge
     a = _a; b = _b; c = _c; f = _f; 
   }
   ~Edge() { };
-
   int a;
   int b;
   int c;
@@ -24,7 +22,7 @@ vector< vector<Edge*> > adj;
 bool* visited;
 int node_count;
 
-bool recursiveDFS(int from, int to, vector<Edge*>& path)
+bool DFS(int from, int to, vector<Edge*>& path)
 {
     if(from == to) return true;
     visited[from] = true;
@@ -35,7 +33,7 @@ bool recursiveDFS(int from, int to, vector<Edge*>& path)
         if(e->f >= e->c) continue;
         visited[e->b] = true;
         path.push_back(e);
-        if( recursiveDFS(e->b, to, path) ) return true;
+        if( DFS(e->b, to, path) ) return true;
         path.pop_back();
     }
     return false;
@@ -45,7 +43,7 @@ bool find_path(int from, int to, vector<Edge*>& output)
 {
     output.clear();
     memset(visited, false, node_count * sizeof(bool));
-    return recursiveDFS(from, to, output);
+    return DFS(from, to, output);
 }
 
 int max_flow(int source, int sink)
