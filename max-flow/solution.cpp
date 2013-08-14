@@ -1,11 +1,10 @@
 #include <iostream>
 #include <vector>
-#include <limits.h>
-#include <string.h>
+#include <stack>
+#include <climits>
+#include <cstring>
 
 using namespace std;
-
-struct Edge;
 
 struct Edge
 {
@@ -21,74 +20,48 @@ struct Edge
   Edge* r;
 };
 
-struct Node
-{
-  Node(int _x, int _y, int _m, int _i)
-  {
-    x = _x; y = _y; m = _m; i = _i;
-  }
-  ~Node() { }
-
-  int x;
-  int y;
-  int m;
-  int i;
-};
-
 vector< vector<Edge*> > adj;
 bool* visited;
 int node_count;
 
-void reset_visited()
+bool recursiveDFS(int from, int to, vector<Edge*>& path)
 {
-  memset(visited, false, node_count * sizeof(bool));
-}
-
-void reset_flow()
-{
-  for(int i = 0; i < adj.size(); ++i)
-    for(int j = 0; j < adj[i].size(); ++j)
-      adj[i][j]->f = 0;
-}
-
-vector<Edge*>* find_path(int from, int to, vector<Edge*>* current_path)
-{
-  if(!current_path) current_path = new vector<Edge*>();
-  if(from == to)
-    return current_path;
-  // DFS
-  visited[from] = true;
-  for(int i = 0; i < adj[from].size(); ++i) {
-    Edge* e = adj[from][i];
-    int rest = e->c - e->f;
-    vector<Edge*>* result = 0;
-    if(rest > 0 && !visited[e->b]) {
-      current_path->push_back(e);
-      visited[e->b] = true;
-      result = find_path(e->b, to, current_path); 
+    if(from == to) return true;
+    visited[from] = true;
+    for(int i = 0; i < adj[from].size(); ++i)
+    {
+        Edge* e = adj[from][i];
+        if(visited[e->b]) continue;
+        if(e->f >= e->c) continue;
+        visited[e->b] = true;
+        path.push_back(e);
+        if( recursiveDFS(e->b, to, path) ) return true;
+        path.pop_back();
     }
-    if(result) return result;
-  }
-  current_path->pop_back();
-  return 0;
+    return false;
+}
+
+bool find_path(int from, int to, vector<Edge*>& output)
+{
+    output.clear();
+    memset(visited, false, node_count * sizeof(bool));
+    return recursiveDFS(from, to, output);
 }
 
 int max_flow(int source, int sink)
 {
-  vector<Edge*>* p = find_path(source, sink, 0);
-  while(p) {
-    int flow = INT_MAX;
-    for(int i = 0; i < p->size(); ++i)
-      if((*p)[i]->c - (*p)[i]->f < flow) flow = (*p)[i]->c - (*p)[i]->f;
+    vector<Edge*> p;
+    while(find_path(source, sink, p))
+    {
+        int flow = INT_MAX;
+        for(int i = 0; i < p.size(); ++i)
+            if(p[i]->c - p[i]->f < flow) flow = p[i]->c - p[i]->f;
 
-    for(int i = 0; i < p->size(); ++i) {
-      (*p)[i]->f += flow;
-      (*p)[i]->r->f -= flow;
+        for(int i = 0; i < p.size(); ++i) {
+            p[i]->f += flow;
+            p[i]->r->f -= flow;
+        }
     }
-
-    reset_visited();
-    p = find_path(source, sink, 0);
-  }
 
   int total_flow = 0;
   for(int i = 0; i < adj[source].size(); ++i)
@@ -124,12 +97,15 @@ void run()
   add_edge(4, 3, 3);
 
   visited = new bool[node_count];
-  reset_visited();
 
   int m = max_flow(0, node_count - 1);
 
   cout << m << endl;
 
+  for(unsigned int i = 0; i < adj.size(); ++i)
+      for(unsigned int j = 0; j < adj[i].size(); ++j)
+          delete adj[i][j];
+  adj.clear();
   delete[] visited;
 }
 
