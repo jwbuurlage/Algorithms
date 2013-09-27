@@ -20,3 +20,15 @@ int LCSLength(const string& word1, const string& word2)
     }
     return table[word1.size()][word2.size()];
 }
+
+//Get the actual LCS by backtracking through the table
+string word1;
+string word2;
+
+string getLCS(int i, int j)
+{
+    if( i == 0 || j == 0 ) return "";
+    if( word1[i-1] == word2[j-1] ) return getLCS(i-1, j-1) + word1[i-1];
+    if( table[i][j-1] > table[i-1][j] ) return getLCS(i, j-1);
+    else return getLCS(i-1, j);
+}
