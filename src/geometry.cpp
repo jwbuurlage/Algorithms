@@ -1,4 +1,3 @@
-//Even when coordinates are in [-10000,10000] range the square distances can get up to billions
 //Max signed integer: 2,147,483,647
 typedef double NUM; //use either double or long long
 
@@ -53,9 +52,6 @@ bool segmentsIntersect(const point& a1, const point& a2, const point& b1, const 
     return true;
 }
 
-#include <vector> //for polygon point list
-using namespace std;
-
 //This returns TWICE the area of a polygon because then it will always be an integer if the input is integers
 NUM polygonTwiceArea(const vector<point>& polygon)
 {
@@ -100,13 +96,6 @@ int pointInConvex(point p, const vector<point>& polygon, int whenOnBoundary = 0)
     }
     return 1; //inside convex
 }
-
-//
-//Convex Hull (Graham scan)
-//
-
-#include <vector>
-#include <algorithm>
 
 struct comp //for sorting the points at the start of the scan
 {
@@ -168,33 +157,4 @@ void convexHull(const vector<point>& points, vector<int>& output)
         output.push_back(ordered[i]);
     }
     return;
-}
-
-
-//
-//TESTING
-//
-
-#include <iostream>
-#include <time.h> //clock
-#include <cstdlib> //rand
-
-using namespace std;
-
-NUM randomd(){ return (rand()%2001)-1000; } //random in [-1000,1000] range
-
-int main()
-{
-    srand(0);
-
-    cout << "Starting timing" << endl;
-
-    clock_t begin = clock();
-    for(int i = 0; i < 100000000; ++i)
-        sqDistPointSegment(point(randomd(),randomd()), point(randomd(),randomd()), point(randomd(), randomd()));
-    clock_t end = clock();
-
-    cout << "Time taken: " << ((double)(end-begin))/((double)CLOCKS_PER_SEC) << endl;
-    cin.get();
-    return 0;
 }

@@ -1,16 +1,6 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <stack>
-#include <cstring>
-#include <algorithm>
-
 // GAAT ER VANUIT DAT JE EEN CONNECTED GRAPH HEBT
 // anders toepassingen op elke component
 
-using namespace std;
-
-int N_MAX = 7;
 typedef pair<int, int> pii;
 
 struct Edge
@@ -89,20 +79,4 @@ void kruskal()
   cout << "Length: " << total_length << endl;
   for(int i = 0; i < mst.size(); ++i)
     cout << "Edge: " << mst[i].from << " " << mst[i].to << endl;
-}
-
-int main()
-{
-  int num_vertices, num_edges, from, to, weight;
-  cin >> num_vertices;
-  cin >> num_edges;
-  for(int j = 0; j < num_edges; ++j)
-  {
-    cin >> from >> to >> weight;
-    edges.push_back(Edge(from, to, weight));
-  }
-
-  kruskal();
-
-  return 0;
 }

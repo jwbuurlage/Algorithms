@@ -1,6 +1,3 @@
-#include <string>
-using namespace std;
-
 int distanceTable[1002][1002];
 
 int levDistance(const string& word1, const string& word2)

@@ -1,11 +1,3 @@
-#include <vector>
-#include <cstdlib>
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <ctime>
-using namespace std;
-
 // base and base_digits must be consistent
 const int base = 1000000000;
 const int base_digits = 9;
@@ -353,22 +345,3 @@ struct bigint {
         return res;
     }
 };
-
-int main() {
-    bigint a("99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999");
-    bigint b("19999999999999999999999999999999999999999999999999999999999999999999999999999999999999998");
-    cout << a * b << endl;
-    cout << a / b << endl;
-
-    string sa, sb;
-    for (int i = 0; i < 100000; i++)
-        sa += i % 10 + '0';
-    for (int i = 0; i < 20000; i++)
-        sb += i % 10 + '0';
-    a = bigint(sa);
-    b = bigint(sb);
-
-    clock_t start = clock();
-    bigint c = a / b;
-    fprintf(stderr, "time=%.3lfsec\n", 0.001 * (clock() - start));
-}

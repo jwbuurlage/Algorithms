@@ -1,11 +1,8 @@
 #include <iostream>
-
-#include <limits.h>
-#include <math.h>
-
+#include <climits>
+#include <cmath>
 #include <cstring>
 #include <string>
-
 #include <algorithm>
 #include <vector>
 #include <stack>
@@ -16,7 +13,6 @@
 using namespace std;
 
 void run() {
-
 
 }
 

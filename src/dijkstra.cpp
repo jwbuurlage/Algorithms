@@ -1,11 +1,3 @@
-#include <iostream>
-#include <vector>
-#include <queue>
-#include <cstring>
-#include <algorithm>
-
-using namespace std;
-
 #define N_MAX 6
 typedef pair<int, int> pii;
 
@@ -52,23 +44,4 @@ void dijkstra()
   // OUTPUT
   for(int i = 0; i < N_MAX; ++i)
     cout << "Distance to " << i << " is " << distances[i] << endl;
-}
-
-int main()
-{
-  int num_vertices, num_edges, node, distance;
-  cin >> num_vertices;
-  for(int i = 0; i < num_vertices; ++i)
-  {
-     cin >> num_edges;
-     for(int j = 0; j < num_edges; ++j)
-     {
-       cin >> node >> distance;
-       adj[i].push_back(Edge(node, distance));
-     }
-  }
-
-  dijkstra();
-
-  return 0;
 }

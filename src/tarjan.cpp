@@ -1,9 +1,3 @@
-//Tarjan's algorithm for finding Strongly Connected Components
-#include <iostream>
-#include <vector>
-#include <stack>
-using namespace std;
-
 //Graph
 vector< vector<int> > adj;
 
@@ -53,32 +47,18 @@ void tarjan(int v)
     }
 }
 
-void run()
+void findSCC()
 {
-    int n, m;
-    cin >> n >> m;
-
-    adj.clear(); adj.resize(n);
-    for(int i = 0; i < m; ++i)
-    {
-        int a, b;
-        cin >> a >> b;
-        a--; b--;
-        adj[a].push_back(b);
-    }
-
-    //Initialize
+    //Init
     newId = 1;
-    index.clear(); index.resize(n+1, 0);
-    lowlink.clear(); lowlink.resize(n+1,0);
+    index.clear();     index.resize(n+1, 0);
+    lowlink.clear(); lowlink.resize(n+1, 0);
     inStack.clear(); inStack.resize(n+1, false);
     while(!tarjanStack.empty()) tarjanStack.pop();
     strongComponents.clear();
     //Start
-    for(int i = 0; i < n; ++i)
+    for(int i = 0; i < nodecount; ++i)
         if(index[i] == 0)
             tarjan(i);
-
     cout << strongComponents.size() << endl;
 }
-

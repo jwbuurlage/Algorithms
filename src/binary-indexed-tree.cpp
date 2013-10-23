@@ -1,4 +1,4 @@
-//THIS USES 1-BASED INDICES!!!!!!!! for better bitmask magic
+//THIS USES 1-BASED INDICES!!!! for better bitmask magic
 //array of values:   f[i]
 //cumulative values: c[i] = sum[ f[j] , {j,0,i} ]
 //Modify values (f[i]) and read cumulative values (c[i]) both in log(n) time
@@ -51,7 +51,6 @@ int find(int cumFre){
 }
 
 //2-Dimensional
-
 void update(int x , int y , int val){ //ADDS val to f[x,y]
 	int y1;
 	while (x <= max_x){
@@ -63,11 +62,9 @@ void update(int x , int y , int val){ //ADDS val to f[x,y]
 		x += (x & -x); 
 	}
 }
-
 void updatey(int x , int y , int val){
 	while (y <= max_y){
 		tree[x][y] += val;
 		y += (y & -y); 
 	}
 }
-

@@ -1,23 +1,4 @@
-#include <iostream>
-
-#include <limits.h>
-#include <math.h>
-
-#include <cstring>
-#include <string>
-
-#include <algorithm>
-#include <vector>
-#include <stack>
-#include <queue>
-#include <list>
-#include <map>
-
 // assumes bidirected graph, adjust accordingly
-
-using namespace std;
-
-#define N_MAX 7
 
 vector<vector<int> > adj;
 vector<bool> visited(N_MAX, false);
@@ -45,11 +26,4 @@ void cycle_detection() {
       visited[i] = true;
     }
   }
-}
-
-int main() {
-
-  cycle_detection();
-
-	return 0;
 }
