@@ -78,22 +78,26 @@ bool pointInPolygon(point p, const vector<point>& polygon)
     else return true; //p was inside polygon
 }
 
+//Assumes that polygon has unique points!
 int pointInConvex(point p, const vector<point>& polygon, int whenOnBoundary = 0)
 {
     //The cross product should always have the same sign when the point is inside the convex
     unsigned int N = polygon.size();
     int sign = 0;
+    bool onExtendedBoundary = false;
     for(unsigned int i = 0; i < N; ++i)
     {
-        long long cross = ((polygon[i] - p)^(polygon[(i+1)%N] - p));
-        if( cross == 0 )
-            return whenOnBoundary;
+        NUM cross = ((polygon[i] - p)^(polygon[(i+1)%N] - p));
+        if( cross == 0 ) //epsilon when doubles
+            onExtendedBoundary = true; //point is either on the boundary, or on the extended line of a boundary segment
         else
         {
             if( sign == 0 ) sign = cross > 0 ? 1 : -1;
             else if( (sign == 1 && cross < 0) || (sign == -1 && cross > 0) ) return 0; //outside convex
         }
     }
+    //Either inside, or on boundary
+    if(onExtendedBoundary) return whenOnBoundary;
     return 1; //inside convex
 }
 
