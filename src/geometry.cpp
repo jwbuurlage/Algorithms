@@ -1,6 +1,10 @@
 //Max signed integer: 2,147,483,647
 typedef double NUM; //use either double or long long
 
+//Two large prime numbers
+//982451653
+//81253449
+
 struct point
 {
     NUM x, y;
@@ -21,32 +25,79 @@ NUM sqDist(const point& a, const point& b)  { return (b.x-a.x)*(b.x-a.x) + (b.y-
 //BUT ALSO the distance from both points of the second line segment to the first segment
 //Take the minimum of these four. (Or zero if they intersect)
 
+//Distance SQUARED from a to line through bc
+double sqDistPointLine(point a, point b, point c)
+{
+    a = a-b;
+    c = c-b;
+    return (a^c)*(a^c)/((double)c*c);
+}
+
 //Distance SQUARED from point a to line segment bc
 double sqDistPointSegment(point a, point b, point c)
 {
     a = a-b;
     c = c-b;
-    long long dot = a*c;
+    NUM dot = a*c;
     if( dot <= 0 ) return a*a;
     else
     {
-        long long len = c*c;
+        NUM len = c*c;
         if( dot >= len ) return (a-c)*(a-c);
         else return a*a - dot*dot/((double)len); //OR: (a^c)*(a^c) / ((double)len);
         //point projection = c * (dot/((double)len);
     }
 }
 
+//point a on segment bc
+bool pointOnSegment(point a, point b, point c)
+{
+    a = a-b;
+    c = c-b;
+    NUM cross = a^c;
+    if( cross != 0 ) return false;
+    //a is on the line through b and c
+    NUM dot = a*c;
+    if( dot < 0 ) return false;
+    if( dot > c*c ) return false;
+    return true;
+}
+
 //Line segment a1---a2 intersects with b1---b2
-//If they TOUCH then it can fail
 bool segmentsIntersect(const point& a1, const point& a2, const point& b1, const point& b2)
 {
-    NUM cross = (a2-a1)^(b2-b1);
-    if( cross == 0 ) return false; //parallel
-    double t = ((b1-a1)^(b2-b1)) / ((double)cross);
-    if( t < 0 || t > 1 ) return false;
-    double u = ((b1-a1)^(a2-a1)) / ((double)cross);
-    if( u < 0 || u > 1 ) return false;
+    point q = a2-a1;
+    point r = b2-b1;
+    point s = b1-a1;
+    NUM cross = q^r;
+    if( cross == 0 ){ //parallel
+        NUM cross2 = q^s;
+        if( cross2 != 0 ) return false; //no intersection
+        //line segments lie in the extension of each other
+        NUM v1 = s*q;
+        NUM v2 = (b2-a1)*q;
+        NUM v3 = q*q;
+        if( v1 >= 0 && v1 <= v3 ) return true; //b1 is between a1 and a2
+        if( v2 >= 0 && v2 <= v3 ) return true; //b2 is between a1 and a2
+        if( v1 <= 0 && v2 >= v3 ) return true; //b1 is before a1 and b2 is after a2
+        return false;
+    }
+    NUM c1 = s^r;
+    NUM c2 = s^q;
+    //We must check if 0 <= c1/cross <= 1 and 0 <= c2/cross <= 1
+    if( cross > 0 ){
+        if( c1 < 0 ) return false;
+        if( c1 > cross ) return false;
+        if( c2 < 0 ) return false;
+        if( c2 > cross ) return false;
+    }else{
+        if( c1 > 0 ) return false;
+        if( c1 < cross ) return false;
+        if( c2 > 0 ) return false;
+        if( c2 < cross ) return false;
+    }
+    //double t = (s^r) / ((double)cross);
+    //double u = (s^q) / ((double)cross);
     //point intersect = a1*(1-t) + a2*t;
     //point intersect = b1*(1-u) + b2*u;
     return true;
@@ -62,20 +113,27 @@ NUM polygonTwiceArea(const vector<point>& polygon)
     return (area > 0 ? area : -area); //abs(area)
 }
 
-//WHEN POSSIBLE USE pointInConvex
-bool pointInPolygon(point p, const vector<point>& polygon)
+int pointInPolygon(point p, const vector<point>& polygon)
 {
-    point outside(982451653, 881253449); //Choose prime numbers!!
+    //Check crossings with horizontal semi-line though p to +x
     int crosscount = 0;
     unsigned int N = polygon.size();
-    for(unsigned int i = 0; i < N; ++i)
+    for(unsigned int i = 0, j = N-1; i < N; j = i++)
     {
-        if( sqDistPointSegment( p , polygon[i], polygon[(i+1)%N] ) <= 1e-11 )
-            return true; //POINT ON BOUNDARY: change true to false if wanted
-        if( segmentsIntersect( p, outside, polygon[i], polygon[(i+1)%N] ) ) ++crosscount;
+        if( pointOnSegment( p , polygon[j], polygon[i] ) ) return 2; //p on boundary
+        //Check if it crosses the y=p.y line
+        if( polygon[j].y > p.y ){
+            if( polygon[i].y > p.y ) continue; //same side of line
+            if( (p.x-polygon[i].x)*(polygon[j].y - polygon[i].y) < (polygon[j].x - polygon[i].x)*(p.y - polygon[i].y) )
+                ++crosscount;
+        }else{
+            if( !(polygon[i].y > p.y) ) continue; //same side of line
+            if( (p.x-polygon[i].x)*(polygon[j].y - polygon[i].y) > (polygon[j].x - polygon[i].x)*(p.y - polygon[i].y) )
+                ++crosscount;
+        }
     }
-    if( crosscount % 2 == 0 ) return false; //p was outside polygon
-    else return true; //p was inside polygon
+    if( crosscount % 2 == 0 ) return 0; //p was outside polygon
+    else return 1; //p was inside polygon
 }
 
 //Assumes that polygon has unique points!
@@ -85,9 +143,9 @@ int pointInConvex(point p, const vector<point>& polygon, int whenOnBoundary = 0)
     unsigned int N = polygon.size();
     int sign = 0;
     bool onExtendedBoundary = false;
-    for(unsigned int i = 0; i < N; ++i)
+    for(unsigned int i = 0, j = N-1; i < N; j = i++)
     {
-        NUM cross = ((polygon[i] - p)^(polygon[(i+1)%N] - p));
+        NUM cross = ((polygon[j] - p)^(polygon[i] - p));
         if( cross == 0 ) //epsilon when doubles
             onExtendedBoundary = true; //point is either on the boundary, or on the extended line of a boundary segment
         else
